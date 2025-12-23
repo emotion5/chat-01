@@ -32,10 +32,10 @@ export default async function handler(
     });
 
     res.status(200).json(response);
-  } catch (error: any) {
+  } catch (error) {
     console.error('API Error:', error);
     res.status(500).json({
-      error: error.message || 'Internal server error'
+      error: error instanceof Error ? error.message : 'Internal server error'
     });
   }
 }

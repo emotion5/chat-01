@@ -20,8 +20,8 @@ export function useChat() {
         content: assistantContent
       };
       setMessages((prev) => [...prev, assistantMessage]);
-    } catch (err: any) {
-      setError(err.message || 'Failed to send message');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send message');
     } finally {
       setIsLoading(false);
     }

@@ -10,7 +10,9 @@ export async function sendMessage(messages: Message[]): Promise<string> {
   });
 
   if (!response.ok) {
-    throw new Error(`API Error: ${response.status}`);
+    const errorData = await response.json().catch(() => ({}));
+    const errorMessage = errorData.error || `API Error: ${response.status}`;
+    throw new Error(errorMessage);
   }
 
   const data: ChatResponse = await response.json();

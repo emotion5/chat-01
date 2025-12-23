@@ -1,26 +1,20 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 import Anthropic from '@anthropic-ai/sdk';
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
-  // CORS 설정
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+dotenv.config({ path: '.env.local' });
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+const app = express();
+const PORT = 3001;
 
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+app.use(cors());
+app.use(express.json());
 
+app.post('/api/chat', async (req, res) => {
   try {
-    // 환경변수 확인
     const apiKey = process.env.CLAUDE_API_KEY;
+
     if (!apiKey) {
       console.error('CLAUDE_API_KEY is not set');
       return res.status(500).json({
@@ -56,4 +50,9 @@ export default async function handler(
       error: error instanceof Error ? error.message : 'Internal server error'
     });
   }
-}
+});
+
+app.listen(PORT, () => {
+  console.log(`✅ Development server running at http://localhost:${PORT}`);
+  console.log(`🔑 API Key: ${process.env.CLAUDE_API_KEY ? 'Found' : 'Not found'}`);
+});
